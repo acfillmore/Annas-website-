@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            background-color: #f8f9fa; /* Matches your clean theme */
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Simple Navigation Bar */
+        .nav-links {
+            background-color: #212529;
+            padding: 15px;
+            margin-bottom: 40px;
+        }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .nav-links a:hover {
+            color: #0085A1; /* Your Bootstrap blue */
+        }
+
+        /* Game Layout */
+        h1 {
+            margin-bottom: 10px;
+        }
+        .status {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #0085A1;
+        }
+
+        /* The Tic-Tac-Toe Grid */
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 5px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            background-color: white;
+            border: 2px solid #ccc;
+            font-size: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+        }
+        .cell:hover {
+            background-color: #e9ecef;
+        }
+        .cell.x { color: #e74c3c; } /* Red for X */
+        .cell.o { color: #3498db; } /* Blue for O */
+
+        /* Restart Button */
+        button {
+            font-size: 18px;
+            padding: 10px 25px;
+            cursor: pointer;
+            border-radius: 8px;
+            border: none;
+            background-color: #0085A1;
+            color: white;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #00657b;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="nav-links">
+        <a href="index.html">Home (Résumé)</a>
+        <a href="fromscratch.html">From Scratch Page</a>
+        <a href="game.html">tick tack toe</a>
+    </div>
+
+    <h1>Tic-Tac-Toe</h1>
+    <div class="status" id="statusDisplay">Player X's turn</div>
+
+    <div class="board" id="board">
+        <div class="cell" data-index="0"></div>
+        <div class="cell" data-index="1"></div>
+        <div class="cell" data-index="2"></div>
+        <div class="cell" data-index="3"></div>
+        <div class="cell" data-index="4"></div>
+        <div class="cell" data-index="5"></div>
+        <div class="cell" data-index="6"></div>
+        <div class="cell" data-index="7"></div>
+        <div class="cell" data-index="8"></div>
+    </div>
+
+    <button onclick="restartGame()">Restart Game</button>
+
+    <script>
+        // Game Variables
+        let board = ["", "", "", "", "", "", "", "", ""];
+        let currentPlayer = "X";
+        let gameActive = true;
+
+        const statusDisplay = document.getElementById('statusDisplay');
+        const cells = document.querySelectorAll('.cell');
+
+        // All the ways to win (rows, columns, diagonals)
+        const winningConditions = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+            [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+            [0, 4, 8], [2, 4, 6]             // Diagonals
+        ];
+
+        // Handle a player clicking a cell
+        function handleCellClick(clickedCellEvent) {
+            const clickedCell = clickedCellEvent.target;
+            const clickedCellIndex = parseInt(clickedCell.getAttribute('data-index'));
+
+            // If the cell is already full or the game is over, do nothing
+            if (board[clickedCellIndex] !== "" || !gameActive) {
+                return;
+            }
+
+            // Update the board and the UI
+            board[clickedCellIndex] = currentPlayer;
+            clickedCell.innerHTML = currentPlayer;
+            clickedCell.classList.add(currentPlayer.toLowerCase());
+
+            checkWinOrDraw();
+        }
+
+        // Check if someone won or if it's a tie
+        function checkWinOrDraw() {
+            let roundWon = false;
+
+            for (let i = 0; i < winningConditions.length; i++) {
+                const [a, b, c] = winningConditions[i];
+                if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                    roundWon = true;
+                    break;
+                }
+            }
+
+            if (roundWon) {
+                statusDisplay.innerHTML = `🎉 Player ${currentPlayer} wins!`;
+                gameActive = false;
+                return;
+            }
+
+            // Check for a tie (if there are no empty strings left in the array)
+            if (!board.includes("")) {
+                statusDisplay.innerHTML = "It's a tie!";
+                gameActive = false;
+                return;
+            }
+
+            // Switch players
+            currentPlayer = currentPlayer === "X" ? "O" : "X";
+            statusDisplay.innerHTML = `Player ${currentPlayer}'s turn`;
+        }
+
+        // Reset the game
+        function restartGame() {
+            gameActive = true;
+            currentPlayer = "X";
+            board = ["", "", "", "", "", "", "", "", ""];
+            statusDisplay.innerHTML = `Player ${currentPlayer}'s turn`;
+            
+            cells.forEach(cell => {
+                cell.innerHTML = "";
+                cell.classList.remove('x', 'o');
+            });
+        }
+
+        // Add event listeners to all cells
+        cells.forEach(cell => cell.addEventListener('click', handleCellClick));
+    </script>
+
+</body>
+</html>
